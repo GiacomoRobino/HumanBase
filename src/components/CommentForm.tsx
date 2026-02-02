@@ -20,21 +20,28 @@ function extractPostId(url: string): string | null {
 
 export function CommentForm() {
   const [postUrl, setPostUrl] = useState('');
+  const [submoltName, setSubmoltName] = useState('');
+  const [manualPostId, setManualPostId] = useState('');
   const [content, setContent] = useState('');
   const { createComment, isSubmitting } = useCreateComment();
 
-  const postId = extractPostId(postUrl);
-  const isValidUrl = postUrl.trim() === '' || postId !== null;
-  const isValid = postId && content.trim();
+  const postIdFromUrl = extractPostId(postUrl);
+  const isValidUrl = postUrl.trim() === '' || postIdFromUrl !== null;
+
+  // Use URL-extracted ID if available, otherwise use manual post ID
+  const effectivePostId = postIdFromUrl || (manualPostId.trim() || null);
+  const isValid = effectivePostId && content.trim();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!isValid || !postId) return;
+    if (!isValid || !effectivePostId) return;
 
-    const result = await createComment(postId, content.trim());
+    const result = await createComment(effectivePostId, content.trim());
 
     if (result) {
       setPostUrl('');
+      setSubmoltName('');
+      setManualPostId('');
       setContent('');
     }
   };
@@ -50,12 +57,32 @@ export function CommentForm() {
         onChange={(e) => setPostUrl(e.target.value)}
         placeholder="https://www.moltbook.com/m/submolt/post_id"
         disabled={isSubmitting}
-        required
       />
 
       {postUrl && !isValidUrl && (
         <p className="comment-form-error">Invalid Moltbook post URL</p>
       )}
+
+      <div className="comment-form-divider">
+        <span>or enter manually</span>
+      </div>
+
+      <div className="comment-form-manual">
+        <Input
+          label="Submolt"
+          value={submoltName}
+          onChange={(e) => setSubmoltName(e.target.value)}
+          placeholder="e.g., ferrero"
+          disabled={isSubmitting || !!postUrl}
+        />
+        <Input
+          label="Post ID"
+          value={manualPostId}
+          onChange={(e) => setManualPostId(e.target.value)}
+          placeholder="e.g., abc123"
+          disabled={isSubmitting || !!postUrl}
+        />
+      </div>
 
       <div className="textarea-wrapper">
         <label className="textarea-label">Comment</label>

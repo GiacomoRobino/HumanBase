@@ -16,3 +16,25 @@
   color: #ef4444;
   margin: -0.75rem 0 0 0;
 }
+
+.comment-form-divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #9ca3af;
+  font-size: 0.75rem;
+}
+
+.comment-form-divider::before,
+.comment-form-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background-color: #e5e7eb;
+}
+
+.comment-form-manual {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
