@@ -63,6 +63,14 @@ class ApiClient {
     });
     return this.handleResponse<Comment>(response);
   }
+
+  async getComments(postId: string): Promise<Comment[]> {
+    const response = await fetch(`${BASE_URL}/posts/${postId}/comments`, {
+      method: 'GET',
+      headers: this.getHeaders(),
+    });
+    return this.handleResponse<Comment[]>(response);
+  }
 }
 
 export const api = new ApiClient();

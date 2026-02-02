@@ -4,6 +4,7 @@ import { AgentProfile } from './components/AgentProfile';
 import { PostForm } from './components/PostForm';
 import { CommentForm } from './components/CommentForm';
 import { ReplyForm } from './components/ReplyForm';
+import { CommentsViewer } from './components/CommentsViewer';
 import './App.css';
 
 function AppContent() {
@@ -27,6 +28,7 @@ function AppContent() {
       <PostForm />
       <CommentForm />
       <ReplyForm />
+      <CommentsViewer />
     </div>
   );
 }
