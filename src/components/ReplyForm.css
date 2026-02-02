@@ -1,0 +1,12 @@
+.reply-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.reply-form-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}

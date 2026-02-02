@@ -45,4 +45,5 @@ export interface Comment {
 
 export interface CreateCommentPayload {
   content: string;
+  parent_id?: string;
 }

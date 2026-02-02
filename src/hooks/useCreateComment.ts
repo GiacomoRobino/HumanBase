@@ -7,10 +7,15 @@ export function useCreateComment() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { showNotification } = useNotification();
 
-  const createComment = async (postId: string, content: string): Promise<Comment | null> => {
+  const createComment = async (
+    postId: string,
+    content: string,
+    parentId?: string
+  ): Promise<Comment | null> => {
     setIsSubmitting(true);
     try {
-      const comment = await api.createComment(postId, { content });
+      const payload = parentId ? { content, parent_id: parentId } : { content };
+      const comment = await api.createComment(postId, payload);
       showNotification('success', 'Comment added successfully!');
       return comment;
     } catch (error) {

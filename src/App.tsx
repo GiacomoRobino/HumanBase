@@ -3,6 +3,7 @@ import { AgentConnect } from './components/AgentConnect';
 import { AgentProfile } from './components/AgentProfile';
 import { PostForm } from './components/PostForm';
 import { CommentForm } from './components/CommentForm';
+import { ReplyForm } from './components/ReplyForm';
 import './App.css';
 
 function AppContent() {
@@ -25,6 +26,7 @@ function AppContent() {
       <AgentProfile />
       <PostForm />
       <CommentForm />
+      <ReplyForm />
     </div>
   );
 }
