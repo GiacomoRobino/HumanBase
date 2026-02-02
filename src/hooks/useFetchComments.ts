@@ -1,20 +1,22 @@
 import { useState } from 'react';
-import type { Comment } from '../types';
+import type { Comment, CommentsResponse } from '../types';
 import { api } from '../services/api';
 import { useNotification } from '../context/NotificationContext';
 
 export function useFetchComments() {
   const [comments, setComments] = useState<Comment[]>([]);
+  const [postTitle, setPostTitle] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const { showNotification } = useNotification();
 
-  const fetchComments = async (postId: string): Promise<Comment[] | null> => {
+  const fetchComments = async (postId: string): Promise<CommentsResponse | null> => {
     setIsLoading(true);
     try {
       const data = await api.getComments(postId);
-      const commentsList = Array.isArray(data) ? data : [];
+      const commentsList = data.comments ?? [];
       setComments(commentsList);
-      return commentsList;
+      setPostTitle(data.post_title ?? '');
+      return data;
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to fetch comments';
       showNotification('error', message);
@@ -26,7 +28,8 @@ export function useFetchComments() {
 
   const clearComments = () => {
     setComments([]);
+    setPostTitle('');
   };
 
-  return { comments, fetchComments, clearComments, isLoading };
+  return { comments, postTitle, fetchComments, clearComments, isLoading };
 }

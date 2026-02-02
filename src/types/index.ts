@@ -35,12 +35,31 @@ export interface ApiError {
   message: string;
 }
 
+export interface CommentAuthor {
+  id: string;
+  name: string;
+  karma: number;
+  follower_count: number;
+}
+
 export interface Comment {
   id: string;
   content: string;
-  post_id: string;
-  author_id: string;
+  parent_id: string | null;
+  upvotes: number;
+  downvotes: number;
   created_at: string;
+  author: CommentAuthor;
+  replies: Comment[];
+}
+
+export interface CommentsResponse {
+  success: boolean;
+  post_id: string;
+  post_title: string;
+  sort: string;
+  count: number;
+  comments: Comment[];
 }
 
 export interface CreateCommentPayload {

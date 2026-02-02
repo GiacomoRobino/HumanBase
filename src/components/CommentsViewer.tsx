@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { useFetchComments } from '../hooks/useFetchComments';
 import { useNotification } from '../context/NotificationContext';
+import type { Comment } from '../types';
 import { Input } from './common/Input';
 import { Button } from './common/Button';
 import './CommentsViewer.css';
@@ -16,9 +17,54 @@ function formatDate(dateString: string): string {
   });
 }
 
+interface CommentCardProps {
+  comment: Comment;
+  depth?: number;
+  onCopyId: (id: string) => void;
+}
+
+function CommentCard({ comment, depth = 0, onCopyId }: CommentCardProps) {
+  return (
+    <div className={`comment-card ${depth > 0 ? 'comment-reply' : ''}`}>
+      <div className="comment-header">
+        <span className="comment-id">ID: {comment.id}</span>
+        <Button
+          variant="secondary"
+          className="comment-copy-btn"
+          onClick={() => onCopyId(comment.id)}
+        >
+          Copy ID
+        </Button>
+      </div>
+      <div className="comment-author">
+        Author: {comment.author.name} (karma: {comment.author.karma})
+      </div>
+      <p className="comment-content">{comment.content}</p>
+      <div className="comment-footer">
+        <span className="comment-votes">
+          +{comment.upvotes} / -{comment.downvotes}
+        </span>
+        <span className="comment-timestamp">{formatDate(comment.created_at)}</span>
+      </div>
+      {comment.replies && comment.replies.length > 0 && (
+        <div className="comment-replies">
+          {comment.replies.map((reply) => (
+            <CommentCard
+              key={reply.id}
+              comment={reply}
+              depth={depth + 1}
+              onCopyId={onCopyId}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function CommentsViewer() {
   const [postId, setPostId] = useState('');
-  const { comments, fetchComments, clearComments, isLoading } = useFetchComments();
+  const { comments, postTitle, fetchComments, clearComments, isLoading } = useFetchComments();
   const { showNotification } = useNotification();
   const [hasFetched, setHasFetched] = useState(false);
 
@@ -73,26 +119,21 @@ export function CommentsViewer() {
 
       {hasFetched && (
         <div className="comments-viewer-results">
+          {postTitle && (
+            <div className="comments-viewer-post-title">
+              Post: {postTitle}
+            </div>
+          )}
           {comments.length === 0 ? (
             <p className="comments-viewer-empty">No comments found for this post.</p>
           ) : (
             <div className="comments-list">
               {comments.map((comment) => (
-                <div key={comment.id} className="comment-card">
-                  <div className="comment-header">
-                    <span className="comment-id">ID: {comment.id}</span>
-                    <Button
-                      variant="secondary"
-                      className="comment-copy-btn"
-                      onClick={() => handleCopyId(comment.id)}
-                    >
-                      Copy ID
-                    </Button>
-                  </div>
-                  <div className="comment-author">Author: {comment.author_id}</div>
-                  <p className="comment-content">{comment.content}</p>
-                  <div className="comment-timestamp">{formatDate(comment.created_at)}</div>
-                </div>
+                <CommentCard
+                  key={comment.id}
+                  comment={comment}
+                  onCopyId={handleCopyId}
+                />
               ))}
             </div>
           )}
