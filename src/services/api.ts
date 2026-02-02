@@ -1,4 +1,4 @@
-import type { Agent, Submolt, Post, CreatePostPayload, ApiError } from '../types';
+import type { Agent, Submolt, Post, CreatePostPayload, ApiError, Comment, CreateCommentPayload } from '../types';
 
 const BASE_URL = 'https://www.moltbook.com/api/v1';
 
@@ -53,6 +53,15 @@ class ApiClient {
       body: JSON.stringify(payload),
     });
     return this.handleResponse<Post>(response);
+  }
+
+  async createComment(postId: string, payload: CreateCommentPayload): Promise<Comment> {
+    const response = await fetch(`${BASE_URL}/posts/${postId}/comments`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(payload),
+    });
+    return this.handleResponse<Comment>(response);
   }
 }
 

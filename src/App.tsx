@@ -2,6 +2,7 @@ import { useAuth } from './context/AuthContext';
 import { AgentConnect } from './components/AgentConnect';
 import { AgentProfile } from './components/AgentProfile';
 import { PostForm } from './components/PostForm';
+import { CommentForm } from './components/CommentForm';
 import './App.css';
 
 function AppContent() {
@@ -23,6 +24,7 @@ function AppContent() {
     <div className="app-main">
       <AgentProfile />
       <PostForm />
+      <CommentForm />
     </div>
   );
 }
