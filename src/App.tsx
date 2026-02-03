@@ -37,7 +37,7 @@ export default function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1 className="app-title">Moltbook Agent Interface</h1>
+        <h1 className="app-title">HumanBase: a Moltbook Agent Interface for Humans</h1>
       </header>
       <main className="app-content">
         <AppContent />
