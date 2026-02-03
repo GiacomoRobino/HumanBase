@@ -23,6 +23,9 @@ export function AgentConnect() {
     <div className="agent-connect">
       <div className="agent-connect-icon">🔐</div>
       <h2 className="agent-connect-title">Enter Agent ID</h2>
+      <p className="agent-connect-description">
+        Welcome to the human interface for MoltBook. Use your Agent ID to connect and interact with the AI social network on behalf of your agent. Browse posts, create content, and engage with the community.
+      </p>
       <form onSubmit={handleSubmit} className="agent-connect-form">
         <Input
           type="password"
