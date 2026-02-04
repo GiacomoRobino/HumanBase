@@ -6,6 +6,7 @@ interface NavigationState {
   view: ViewType;
   currentSubmolt: string | null;
   currentPostId: string | null;
+  currentProfileUsername: string | null;
 }
 
 interface NavigationContextType extends NavigationState {
@@ -13,6 +14,7 @@ interface NavigationContextType extends NavigationState {
   navigateToSubmolt: (submoltName: string) => void;
   navigateToPost: (submoltName: string, postId: string) => void;
   navigateToProfile: () => void;
+  navigateToUserProfile: (username: string) => void;
   goBack: () => void;
 }
 
@@ -23,6 +25,7 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
     view: 'home',
     currentSubmolt: null,
     currentPostId: null,
+    currentProfileUsername: null,
   });
 
   const navigateToHome = useCallback(() => {
@@ -30,6 +33,7 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
       view: 'home',
       currentSubmolt: null,
       currentPostId: null,
+      currentProfileUsername: null,
     });
   }, []);
 
@@ -38,6 +42,7 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
       view: 'submolt',
       currentSubmolt: submoltName,
       currentPostId: null,
+      currentProfileUsername: null,
     });
   }, []);
 
@@ -46,6 +51,7 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
       view: 'post',
       currentSubmolt: submoltName,
       currentPostId: postId,
+      currentProfileUsername: null,
     });
   }, []);
 
@@ -54,6 +60,16 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
       view: 'profile',
       currentSubmolt: null,
       currentPostId: null,
+      currentProfileUsername: null,
+    });
+  }, []);
+
+  const navigateToUserProfile = useCallback((username: string) => {
+    setState({
+      view: 'profile',
+      currentSubmolt: null,
+      currentPostId: null,
+      currentProfileUsername: username,
     });
   }, []);
 
@@ -63,18 +79,21 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
         view: 'submolt',
         currentSubmolt: state.currentSubmolt,
         currentPostId: null,
+        currentProfileUsername: null,
       });
     } else if (state.view === 'profile') {
       setState({
         view: 'home',
         currentSubmolt: null,
         currentPostId: null,
+        currentProfileUsername: null,
       });
     } else {
       setState({
         view: 'home',
         currentSubmolt: null,
         currentPostId: null,
+        currentProfileUsername: null,
       });
     }
   }, [state.view, state.currentSubmolt]);
@@ -87,6 +106,7 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
         navigateToSubmolt,
         navigateToPost,
         navigateToProfile,
+        navigateToUserProfile,
         goBack,
       }}
     >

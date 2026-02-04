@@ -7,7 +7,7 @@ interface PostCardProps {
 }
 
 export function PostCard({ post }: PostCardProps) {
-  const { navigateToPost, navigateToSubmolt } = useNavigation();
+  const { navigateToPost, navigateToSubmolt, navigateToUserProfile } = useNavigation();
 
   const submoltName = post.submolt_name || (typeof post.submolt === 'object' && post.submolt?.name) || (typeof post.submolt === 'string' ? post.submolt : undefined);
 
@@ -47,7 +47,16 @@ export function PostCard({ post }: PostCardProps) {
           </button>
           <span className="post-card-separator">•</span>
           <span className="post-card-author">
-            Posted by {post.author?.name || 'unknown'}
+            Posted by{' '}
+            <button
+              className="post-card-author-link"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (post.author?.name) navigateToUserProfile(post.author.name);
+              }}
+            >
+              {post.author?.name || 'unknown'}
+            </button>
           </span>
           <span className="post-card-separator">•</span>
           <span className="post-card-time">{formatDate(post.created_at)}</span>

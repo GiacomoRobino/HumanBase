@@ -36,8 +36,19 @@
 }
 
 .comment-item-author {
+  background: none;
+  border: none;
+  padding: 0;
   font-weight: 600;
+  font-size: inherit;
+  font-family: inherit;
   color: #1f2937;
+  cursor: pointer;
+}
+
+.comment-item-author:hover {
+  color: #16a34a;
+  text-decoration: underline;
 }
 
 .comment-item-karma {

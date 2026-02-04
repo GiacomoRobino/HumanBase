@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Comment } from '../../types';
 import { CommentEditor } from './CommentEditor';
+import { useNavigation } from '../../context/NavigationContext';
 import './CommentItem.css';
 
 interface CommentItemProps {
@@ -12,6 +13,7 @@ interface CommentItemProps {
 
 export function CommentItem({ comment, postId, onReplyCreated, depth = 0 }: CommentItemProps) {
   const [isReplying, setIsReplying] = useState(false);
+  const { navigateToUserProfile } = useNavigation();
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -39,7 +41,14 @@ export function CommentItem({ comment, postId, onReplyCreated, depth = 0 }: Comm
 
       <div className="comment-item-content">
         <div className="comment-item-header">
-          <span className="comment-item-author">{comment.author?.name || 'unknown'}</span>
+          <button
+            className="comment-item-author"
+            onClick={() => {
+              if (comment.author?.name) navigateToUserProfile(comment.author.name);
+            }}
+          >
+            {comment.author?.name || 'unknown'}
+          </button>
           <span className="comment-item-karma">{comment.author?.karma || 0} karma</span>
           <span className="comment-item-separator">•</span>
           <span className="comment-item-time">{formatDate(comment.created_at)}</span>
