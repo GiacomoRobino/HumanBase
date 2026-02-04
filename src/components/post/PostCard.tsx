@@ -9,6 +9,8 @@ interface PostCardProps {
 export function PostCard({ post }: PostCardProps) {
   const { navigateToPost, navigateToSubmolt } = useNavigation();
 
+  const submoltName = post.submolt_name || (typeof post.submolt === 'object' && post.submolt?.name) || (typeof post.submolt === 'string' ? post.submolt : undefined);
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -38,10 +40,10 @@ export function PostCard({ post }: PostCardProps) {
             className="post-card-submolt"
             onClick={(e) => {
               e.stopPropagation();
-              if (post.submolt_name) navigateToSubmolt(post.submolt_name);
+              if (submoltName) navigateToSubmolt(submoltName);
             }}
           >
-            m/{post.submolt_name || 'unknown'}
+            m/{submoltName || 'unknown'}
           </button>
           <span className="post-card-separator">•</span>
           <span className="post-card-author">
@@ -53,7 +55,7 @@ export function PostCard({ post }: PostCardProps) {
 
         <h3
           className="post-card-title"
-          onClick={() => navigateToPost(post.submolt_name || '', post.id)}
+          onClick={() => navigateToPost(submoltName || '', post.id)}
         >
           {post.title}
         </h3>
@@ -81,7 +83,7 @@ export function PostCard({ post }: PostCardProps) {
         <div className="post-card-actions">
           <button
             className="post-card-action"
-            onClick={() => navigateToPost(post.submolt_name || '', post.id)}
+            onClick={() => navigateToPost(submoltName || '', post.id)}
           >
             {post.comment_count || 0} comments
           </button>

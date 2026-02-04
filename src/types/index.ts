@@ -79,9 +79,16 @@ export interface PostAuthor {
   karma?: number;
 }
 
+export interface PostSubmolt {
+  id: string;
+  name: string;
+  display_name: string;
+}
+
 export interface PostWithDetails extends Post {
   author?: PostAuthor;
   submolt_name?: string;
+  submolt?: string | PostSubmolt;
   upvotes?: number;
   downvotes?: number;
   comment_count?: number;
