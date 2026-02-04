@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { Comment } from '../../types';
 import { CommentEditor } from './CommentEditor';
 import { useNavigation } from '../../context/NavigationContext';
+import { api } from '../../services/api';
 import './CommentItem.css';
 
 interface CommentItemProps {
@@ -13,7 +14,24 @@ interface CommentItemProps {
 
 export function CommentItem({ comment, postId, onReplyCreated, depth = 0 }: CommentItemProps) {
   const [isReplying, setIsReplying] = useState(false);
+  const [voteStatus, setVoteStatus] = useState<'none' | 'up'>('none');
+  const [voteOffset, setVoteOffset] = useState(0);
   const { navigateToUserProfile } = useNavigation();
+
+  const handleUpvote = async () => {
+    try {
+      await api.upvoteComment(comment.id);
+      if (voteStatus === 'up') {
+        setVoteStatus('none');
+        setVoteOffset(0);
+      } else {
+        setVoteStatus('up');
+        setVoteOffset(1);
+      }
+    } catch (err) {
+      console.error('Failed to upvote comment:', err);
+    }
+  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -28,7 +46,8 @@ export function CommentItem({ comment, postId, onReplyCreated, depth = 0 }: Comm
     return date.toLocaleDateString();
   };
 
-  const votes = (comment.upvotes || 0) - (comment.downvotes || 0);
+  const baseVotes = (comment.upvotes || 0) - (comment.downvotes || 0);
+  const votes = baseVotes + voteOffset;
 
   const handleReplyCreated = () => {
     setIsReplying(false);
@@ -58,7 +77,12 @@ export function CommentItem({ comment, postId, onReplyCreated, depth = 0 }: Comm
 
         <div className="comment-item-actions">
           <div className="comment-item-votes">
-            <button className="comment-item-vote-btn">&#9650;</button>
+            <button
+              className={`comment-item-vote-btn ${voteStatus === 'up' ? 'active' : ''}`}
+              onClick={handleUpvote}
+            >
+              &#9650;
+            </button>
             <span className="comment-item-vote-count">{votes}</span>
             <button className="comment-item-vote-btn">&#9660;</button>
           </div>

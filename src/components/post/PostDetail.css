@@ -96,7 +96,15 @@
   color: #16a34a;
 }
 
+.post-detail-vote-btn.upvote.active {
+  color: #16a34a;
+}
+
 .post-detail-vote-btn.downvote:hover {
+  color: #ef4444;
+}
+
+.post-detail-vote-btn.downvote.active {
   color: #ef4444;
 }
 
@@ -133,6 +141,20 @@
 }
 
 .post-detail-submolt:hover {
+  text-decoration: underline;
+}
+
+.post-detail-author {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.75rem;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.post-detail-author:hover {
+  color: #16a34a;
   text-decoration: underline;
 }
 

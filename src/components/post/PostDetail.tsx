@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { useNavigation } from '../../context/NavigationContext';
 import { usePost } from '../../hooks/usePost';
 import { useFetchComments } from '../../hooks/useFetchComments';
+import { api } from '../../services/api';
 import { CommentThread } from '../comment/CommentThread';
 import { CommentEditor } from '../comment/CommentEditor';
 import './PostDetail.css';
@@ -10,9 +12,41 @@ interface PostDetailProps {
 }
 
 export function PostDetail({ postId }: PostDetailProps) {
-  const { goBack, navigateToSubmolt } = useNavigation();
+  const { goBack, navigateToSubmolt, navigateToUserProfile } = useNavigation();
   const { post, isLoading: isLoadingPost } = usePost(postId);
   const { comments, isLoading: isLoadingComments, refetch: refetchComments } = useFetchComments(postId);
+  const [voteStatus, setVoteStatus] = useState<'none' | 'up' | 'down'>('none');
+  const [voteOffset, setVoteOffset] = useState(0);
+
+  const handleUpvote = async () => {
+    try {
+      await api.upvotePost(postId);
+      if (voteStatus === 'up') {
+        setVoteStatus('none');
+        setVoteOffset(0);
+      } else {
+        setVoteStatus('up');
+        setVoteOffset(voteStatus === 'down' ? 2 : 1);
+      }
+    } catch (err) {
+      console.error('Failed to upvote:', err);
+    }
+  };
+
+  const handleDownvote = async () => {
+    try {
+      await api.downvotePost(postId);
+      if (voteStatus === 'down') {
+        setVoteStatus('none');
+        setVoteOffset(0);
+      } else {
+        setVoteStatus('down');
+        setVoteOffset(voteStatus === 'up' ? -2 : -1);
+      }
+    } catch (err) {
+      console.error('Failed to downvote:', err);
+    }
+  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -37,7 +71,8 @@ export function PostDetail({ postId }: PostDetailProps) {
     );
   }
 
-  const votes = (post.upvotes || 0) - (post.downvotes || 0);
+  const baseVotes = (post.upvotes || 0) - (post.downvotes || 0);
+  const votes = baseVotes + voteOffset;
 
   return (
     <div className="post-detail">
@@ -47,9 +82,19 @@ export function PostDetail({ postId }: PostDetailProps) {
 
       <article className="post-detail-content">
         <div className="post-detail-votes">
-          <button className="post-detail-vote-btn upvote">&#9650;</button>
+          <button
+            className={`post-detail-vote-btn upvote ${voteStatus === 'up' ? 'active' : ''}`}
+            onClick={handleUpvote}
+          >
+            &#9650;
+          </button>
           <span className="post-detail-vote-count">{votes}</span>
-          <button className="post-detail-vote-btn downvote">&#9660;</button>
+          <button
+            className={`post-detail-vote-btn downvote ${voteStatus === 'down' ? 'active' : ''}`}
+            onClick={handleDownvote}
+          >
+            &#9660;
+          </button>
         </div>
 
         <div className="post-detail-main">
@@ -61,7 +106,12 @@ export function PostDetail({ postId }: PostDetailProps) {
               m/{post.submolt_name || 'unknown'}
             </button>
             <span className="post-detail-separator">•</span>
-            <span>Posted by {post.author?.name || 'unknown'}</span>
+            <button
+              className="post-detail-author"
+              onClick={() => post.author?.name && navigateToUserProfile(post.author.name)}
+            >
+              Posted by {post.author?.name || 'unknown'}
+            </button>
             <span className="post-detail-separator">•</span>
             <span>{formatDate(post.created_at)}</span>
           </div>

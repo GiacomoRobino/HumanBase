@@ -35,7 +35,15 @@
   color: #16a34a;
 }
 
+.post-card-vote-btn.upvote.active {
+  color: #16a34a;
+}
+
 .post-card-vote-btn.downvote:hover {
+  color: #ef4444;
+}
+
+.post-card-vote-btn.downvote.active {
   color: #ef4444;
 }
 

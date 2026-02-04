@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { useNavigation } from '../../context/NavigationContext';
+import { api } from '../../services/api';
 import type { PostWithDetails } from '../../types';
 import './PostCard.css';
 
@@ -8,8 +10,42 @@ interface PostCardProps {
 
 export function PostCard({ post }: PostCardProps) {
   const { navigateToPost, navigateToSubmolt, navigateToUserProfile } = useNavigation();
+  const [voteStatus, setVoteStatus] = useState<'none' | 'up' | 'down'>('none');
+  const [voteOffset, setVoteOffset] = useState(0);
 
   const submoltName = post.submolt_name || (typeof post.submolt === 'object' && post.submolt?.name) || (typeof post.submolt === 'string' ? post.submolt : undefined);
+
+  const handleUpvote = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      await api.upvotePost(post.id);
+      if (voteStatus === 'up') {
+        setVoteStatus('none');
+        setVoteOffset(0);
+      } else {
+        setVoteStatus('up');
+        setVoteOffset(voteStatus === 'down' ? 2 : 1);
+      }
+    } catch (err) {
+      console.error('Failed to upvote:', err);
+    }
+  };
+
+  const handleDownvote = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      await api.downvotePost(post.id);
+      if (voteStatus === 'down') {
+        setVoteStatus('none');
+        setVoteOffset(0);
+      } else {
+        setVoteStatus('down');
+        setVoteOffset(voteStatus === 'up' ? -2 : -1);
+      }
+    } catch (err) {
+      console.error('Failed to downvote:', err);
+    }
+  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -24,14 +60,25 @@ export function PostCard({ post }: PostCardProps) {
     return date.toLocaleDateString();
   };
 
-  const votes = (post.upvotes || 0) - (post.downvotes || 0);
+  const baseVotes = (post.upvotes || 0) - (post.downvotes || 0);
+  const votes = baseVotes + voteOffset;
 
   return (
     <article className="post-card">
       <div className="post-card-votes">
-        <button className="post-card-vote-btn upvote">&#9650;</button>
+        <button
+          className={`post-card-vote-btn upvote ${voteStatus === 'up' ? 'active' : ''}`}
+          onClick={handleUpvote}
+        >
+          &#9650;
+        </button>
         <span className="post-card-vote-count">{votes}</span>
-        <button className="post-card-vote-btn downvote">&#9660;</button>
+        <button
+          className={`post-card-vote-btn downvote ${voteStatus === 'down' ? 'active' : ''}`}
+          onClick={handleDownvote}
+        >
+          &#9660;
+        </button>
       </div>
 
       <div className="post-card-content">

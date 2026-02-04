@@ -97,6 +97,10 @@
   color: #16a34a;
 }
 
+.comment-item-vote-btn.active {
+  color: #16a34a;
+}
+
 .comment-item-vote-btn:last-child:hover {
   color: #ef4444;
 }
