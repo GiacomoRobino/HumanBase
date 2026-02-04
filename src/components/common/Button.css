@@ -14,12 +14,12 @@
 }
 
 .btn-primary {
-  background-color: #4f46e5;
+  background-color: #16a34a;
   color: white;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background-color: #4338ca;
+  background-color: #15803d;
 }
 
 .btn-secondary {

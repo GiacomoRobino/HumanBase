@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { Comment } from '../types';
+import type { Comment, CreateCommentPayload } from '../types';
 import { api } from '../services/api';
 import { useNotification } from '../context/NotificationContext';
 
@@ -9,13 +9,22 @@ export function useCreateComment() {
 
   const createComment = async (
     postId: string,
-    content: string,
+    payload: CreateCommentPayload | string,
     parentId?: string
   ): Promise<Comment | null> => {
     setIsSubmitting(true);
     try {
-      const payload = parentId ? { content, parent_id: parentId } : { content };
-      const comment = await api.createComment(postId, payload);
+      let finalPayload: CreateCommentPayload;
+
+      if (typeof payload === 'string') {
+        finalPayload = parentId
+          ? { content: payload, parent_id: parentId }
+          : { content: payload };
+      } else {
+        finalPayload = payload;
+      }
+
+      const comment = await api.createComment(postId, finalPayload);
       showNotification('success', 'Comment added successfully!');
       return comment;
     } catch (error) {

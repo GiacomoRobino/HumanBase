@@ -1,4 +1,17 @@
-import type { Agent, Submolt, Post, CreatePostPayload, ApiError, Comment, CreateCommentPayload, CommentsResponse } from '../types';
+import type {
+  Agent,
+  Submolt,
+  Post,
+  CreatePostPayload,
+  ApiError,
+  Comment,
+  CreateCommentPayload,
+  CommentsResponse,
+  CreateSubmoltPayload,
+  PostsResponse,
+  PostResponse,
+  SubmoltDetails
+} from '../types';
 
 const BASE_URL = 'https://www.moltbook.com/api/v1';
 
@@ -70,6 +83,102 @@ class ApiClient {
       headers: this.getHeaders(),
     });
     return this.handleResponse<CommentsResponse>(response);
+  }
+
+  async getPosts(params?: { sort?: string; limit?: number; submolt?: string }): Promise<PostsResponse> {
+    const searchParams = new URLSearchParams();
+    if (params?.sort) searchParams.append('sort', params.sort);
+    if (params?.limit) searchParams.append('limit', params.limit.toString());
+    if (params?.submolt) searchParams.append('submolt', params.submolt);
+
+    const queryString = searchParams.toString();
+    const url = `${BASE_URL}/posts${queryString ? `?${queryString}` : ''}`;
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: this.getHeaders(),
+    });
+    return this.handleResponse<PostsResponse>(response);
+  }
+
+  async getPost(postId: string): Promise<PostResponse> {
+    const response = await fetch(`${BASE_URL}/posts/${postId}`, {
+      method: 'GET',
+      headers: this.getHeaders(),
+    });
+    return this.handleResponse<PostResponse>(response);
+  }
+
+  async getSubmolt(submoltName: string): Promise<SubmoltDetails> {
+    const response = await fetch(`${BASE_URL}/submolts/${submoltName}`, {
+      method: 'GET',
+      headers: this.getHeaders(),
+    });
+    return this.handleResponse<SubmoltDetails>(response);
+  }
+
+  async getSubmoltFeed(submoltName: string, params?: { sort?: string; limit?: number }): Promise<PostsResponse> {
+    const searchParams = new URLSearchParams();
+    if (params?.sort) searchParams.append('sort', params.sort);
+    if (params?.limit) searchParams.append('limit', params.limit.toString());
+
+    const queryString = searchParams.toString();
+    const url = `${BASE_URL}/submolts/${submoltName}/feed${queryString ? `?${queryString}` : ''}`;
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: this.getHeaders(),
+    });
+    return this.handleResponse<PostsResponse>(response);
+  }
+
+  async createSubmolt(payload: CreateSubmoltPayload): Promise<Submolt> {
+    const response = await fetch(`${BASE_URL}/submolts`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+      body: JSON.stringify(payload),
+    });
+    return this.handleResponse<Submolt>(response);
+  }
+
+  async upvotePost(postId: string): Promise<void> {
+    const response = await fetch(`${BASE_URL}/posts/${postId}/upvote`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+    });
+    return this.handleResponse<void>(response);
+  }
+
+  async downvotePost(postId: string): Promise<void> {
+    const response = await fetch(`${BASE_URL}/posts/${postId}/downvote`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+    });
+    return this.handleResponse<void>(response);
+  }
+
+  async upvoteComment(commentId: string): Promise<void> {
+    const response = await fetch(`${BASE_URL}/comments/${commentId}/upvote`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+    });
+    return this.handleResponse<void>(response);
+  }
+
+  async subscribe(submoltName: string): Promise<void> {
+    const response = await fetch(`${BASE_URL}/submolts/${submoltName}/subscribe`, {
+      method: 'POST',
+      headers: this.getHeaders(),
+    });
+    return this.handleResponse<void>(response);
+  }
+
+  async unsubscribe(submoltName: string): Promise<void> {
+    const response = await fetch(`${BASE_URL}/submolts/${submoltName}/subscribe`, {
+      method: 'DELETE',
+      headers: this.getHeaders(),
+    });
+    return this.handleResponse<void>(response);
   }
 }
 

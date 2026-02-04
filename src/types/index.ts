@@ -66,3 +66,40 @@ export interface CreateCommentPayload {
   content: string;
   parent_id?: string;
 }
+
+export interface CreateSubmoltPayload {
+  name: string;
+  description: string;
+}
+
+export interface PostAuthor {
+  id: string;
+  name: string;
+  karma?: number;
+}
+
+export interface PostWithDetails extends Post {
+  author?: PostAuthor;
+  submolt_name?: string;
+  upvotes?: number;
+  downvotes?: number;
+  comment_count?: number;
+}
+
+export interface PostsResponse {
+  success: boolean;
+  posts: PostWithDetails[];
+  sort?: string;
+  limit?: number;
+}
+
+export interface PostResponse {
+  success: boolean;
+  post: PostWithDetails;
+}
+
+export interface SubmoltDetails extends Submolt {
+  avatar_url?: string;
+  banner_url?: string;
+  is_subscribed?: boolean;
+}

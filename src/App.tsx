@@ -1,64 +1,111 @@
 import { useState } from 'react';
 import { useAuth } from './context/AuthContext';
+import { useNavigation } from './context/NavigationContext';
+import { useSubmolts } from './hooks/useSubmolts';
+import { usePosts } from './hooks/usePosts';
 import { AgentConnect } from './components/AgentConnect';
-import { AgentProfile } from './components/AgentProfile';
-import { PostForm } from './components/PostForm';
-import { CommentForm } from './components/CommentForm';
-import { ReplyForm } from './components/ReplyForm';
-import { CommentsViewer } from './components/CommentsViewer';
 import { HelpPage } from './components/HelpPage';
-import { Button } from './components/common/Button';
+import { MainLayout } from './components/layout/MainLayout';
+import { PostFeed } from './components/post/PostFeed';
+import { PostDetail } from './components/post/PostDetail';
+import { CreatePostCard } from './components/post/CreatePostCard';
+import { SubmoltHeader } from './components/submolt/SubmoltHeader';
+import { CreateSubmoltModal } from './components/submolt/CreateSubmoltModal';
 import './App.css';
 
-interface AppContentProps {
-  showHelp: boolean;
-  onCloseHelp: () => void;
+function HomeView() {
+  const { posts, isLoading, refetch } = usePosts({ sort: 'hot' });
+
+  return (
+    <div className="home-view">
+      <div className="home-header">
+        <h2>Home</h2>
+        <p>Your personalized feed</p>
+      </div>
+      <CreatePostCard onPostCreated={refetch} />
+      <PostFeed posts={posts} isLoading={isLoading} />
+    </div>
+  );
 }
 
-function AppContent({ showHelp, onCloseHelp }: AppContentProps) {
-  const { isConnected, isLoading } = useAuth();
+function SubmoltView({ submoltName }: { submoltName: string }) {
+  const { submolts } = useSubmolts();
+  const { posts, isLoading, refetch } = usePosts({ submolt: submoltName });
+
+  const submolt = submolts.find((s) => s.name === submoltName);
+
+  return (
+    <div className="submolt-view">
+      {submolt && <SubmoltHeader submolt={submolt} />}
+      <CreatePostCard submolt={submoltName} onPostCreated={refetch} />
+      <PostFeed posts={posts} isLoading={isLoading} />
+    </div>
+  );
+}
+
+function MainContent() {
+  const { view, currentSubmolt, currentPostId } = useNavigation();
+
+  if (view === 'post' && currentPostId) {
+    return <PostDetail postId={currentPostId} />;
+  }
+
+  if (view === 'submolt' && currentSubmolt) {
+    return <SubmoltView submoltName={currentSubmolt} />;
+  }
+
+  return <HomeView />;
+}
+
+function AuthenticatedApp() {
+  const [showHelp, setShowHelp] = useState(false);
+  const [showCreateSubmolt, setShowCreateSubmolt] = useState(false);
 
   if (showHelp) {
-    return <HelpPage onBack={onCloseHelp} />;
+    return (
+      <div className="app">
+        <HelpPage onBack={() => setShowHelp(false)} />
+      </div>
+    );
   }
+
+  return (
+    <>
+      <MainLayout
+        onShowHelp={() => setShowHelp(true)}
+        onCreateSubmolt={() => setShowCreateSubmolt(true)}
+      >
+        <MainContent />
+      </MainLayout>
+      <CreateSubmoltModal
+        isOpen={showCreateSubmolt}
+        onClose={() => setShowCreateSubmolt(false)}
+      />
+    </>
+  );
+}
+
+export default function App() {
+  const { isConnected, isLoading } = useAuth();
 
   if (isLoading && !isConnected) {
     return (
-      <div className="app-loading">
-        <span>Loading...</span>
+      <div className="app">
+        <div className="app-loading">
+          <div className="app-spinner"></div>
+          <span>Loading...</span>
+        </div>
       </div>
     );
   }
 
   if (!isConnected) {
-    return <AgentConnect />;
+    return (
+      <div className="app">
+        <AgentConnect />
+      </div>
+    );
   }
 
-  return (
-    <div className="app-main">
-      <AgentProfile />
-      <PostForm />
-      <CommentForm />
-      <ReplyForm />
-      <CommentsViewer />
-    </div>
-  );
-}
-
-export default function App() {
-  const [showHelp, setShowHelp] = useState(false);
-
-  return (
-    <div className="app">
-      <header className="app-header">
-        <h1 className="app-title">HumanBase: a Moltbook Agent Interface for Humans</h1>
-        <Button variant="secondary" onClick={() => setShowHelp(!showHelp)}>
-          {showHelp ? 'Close Help' : 'Help'}
-        </Button>
-      </header>
-      <main className="app-content">
-        <AppContent showHelp={showHelp} onCloseHelp={() => setShowHelp(false)} />
-      </main>
-    </div>
-  );
+  return <AuthenticatedApp />;
 }

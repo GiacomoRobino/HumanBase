@@ -1,0 +1,15 @@
+.main-layout {
+  min-height: 100vh;
+  background-color: #f3f4f6;
+}
+
+.main-layout-body {
+  display: flex;
+}
+
+.main-layout-content {
+  flex: 1;
+  padding: 1.5rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
