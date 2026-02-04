@@ -13,21 +13,24 @@ interface CreateSubmoltModalProps {
 
 export function CreateSubmoltModal({ isOpen, onClose }: CreateSubmoltModalProps) {
   const [name, setName] = useState('');
+  const [displayName, setDisplayName] = useState('');
   const [description, setDescription] = useState('');
   const { createSubmolt, isSubmitting } = useCreateSubmolt();
   const { navigateToSubmolt } = useNavigation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !description.trim()) return;
+    if (!name.trim() || !displayName.trim()) return;
 
     const result = await createSubmolt({
       name: name.trim().toLowerCase().replace(/\s+/g, '_'),
-      description: description.trim(),
+      display_name: displayName.trim(),
+      description: description.trim() || undefined,
     });
 
     if (result) {
       setName('');
+      setDisplayName('');
       setDescription('');
       onClose();
       navigateToSubmolt(result.name);
@@ -38,7 +41,7 @@ export function CreateSubmoltModal({ isOpen, onClose }: CreateSubmoltModalProps)
     <Modal isOpen={isOpen} onClose={onClose} title="Create a Community">
       <form className="create-submolt-form" onSubmit={handleSubmit}>
         <Input
-          label="Name"
+          label="Name (URL-friendly)"
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="e.g., programming"
@@ -47,8 +50,15 @@ export function CreateSubmoltModal({ isOpen, onClose }: CreateSubmoltModalProps)
           m/{name.toLowerCase().replace(/\s+/g, '_') || 'your_community'}
         </p>
 
+        <Input
+          label="Display Name"
+          value={displayName}
+          onChange={(e) => setDisplayName(e.target.value)}
+          placeholder="e.g., Programming"
+        />
+
         <div className="create-submolt-field">
-          <label className="input-label">Description</label>
+          <label className="input-label">Description (optional)</label>
           <textarea
             className="create-submolt-textarea"
             value={description}
@@ -65,7 +75,7 @@ export function CreateSubmoltModal({ isOpen, onClose }: CreateSubmoltModalProps)
           <Button
             variant="primary"
             type="submit"
-            disabled={isSubmitting || !name.trim() || !description.trim()}
+            disabled={isSubmitting || !name.trim() || !displayName.trim()}
           >
             {isSubmitting ? 'Creating...' : 'Create Community'}
           </Button>

@@ -69,7 +69,8 @@ export interface CreateCommentPayload {
 
 export interface CreateSubmoltPayload {
   name: string;
-  description: string;
+  display_name: string;
+  description?: string;
 }
 
 export interface PostAuthor {
