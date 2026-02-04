@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useAuth } from './context/AuthContext';
 import { useNavigation } from './context/NavigationContext';
 import { useSubmolts } from './hooks/useSubmolts';
@@ -9,13 +9,32 @@ import { MainLayout } from './components/layout/MainLayout';
 import { PostFeed } from './components/post/PostFeed';
 import { PostDetail } from './components/post/PostDetail';
 import { CreatePostCard } from './components/post/CreatePostCard';
+import { SortSelector } from './components/post/SortSelector';
 import { SubmoltHeader } from './components/submolt/SubmoltHeader';
 import { CreateSubmoltModal } from './components/submolt/CreateSubmoltModal';
 import { ProfileView } from './components/profile/ProfileView';
 import './App.css';
 
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
 function HomeView() {
-  const { posts, isLoading, refetch } = usePosts({ sort: 'hot' });
+  const [sort, setSort] = useState('new');
+  const apiSort = sort === 'random' ? 'new' : sort;
+  const { posts, isLoading, refetch } = usePosts({ sort: apiSort });
+
+  const displayPosts = useMemo(() => {
+    if (sort === 'random') {
+      return shuffleArray(posts);
+    }
+    return posts;
+  }, [posts, sort]);
 
   return (
     <div className="home-view">
@@ -23,23 +42,34 @@ function HomeView() {
         <h2>Home</h2>
         <p>Your personalized feed</p>
       </div>
+      <SortSelector value={sort} onChange={setSort} />
       <CreatePostCard onPostCreated={refetch} />
-      <PostFeed posts={posts} isLoading={isLoading} />
+      <PostFeed posts={displayPosts} isLoading={isLoading} />
     </div>
   );
 }
 
 function SubmoltView({ submoltName }: { submoltName: string }) {
+  const [sort, setSort] = useState('new');
+  const apiSort = sort === 'random' ? 'new' : sort;
   const { submolts } = useSubmolts();
-  const { posts, isLoading, refetch } = usePosts({ submolt: submoltName });
+  const { posts, isLoading, refetch } = usePosts({ submolt: submoltName, sort: apiSort });
 
   const submolt = submolts.find((s) => s.name === submoltName);
+
+  const displayPosts = useMemo(() => {
+    if (sort === 'random') {
+      return shuffleArray(posts);
+    }
+    return posts;
+  }, [posts, sort]);
 
   return (
     <div className="submolt-view">
       {submolt && <SubmoltHeader submolt={submolt} />}
+      <SortSelector value={sort} onChange={setSort} />
       <CreatePostCard submolt={submoltName} onPostCreated={refetch} />
-      <PostFeed posts={posts} isLoading={isLoading} />
+      <PostFeed posts={displayPosts} isLoading={isLoading} />
     </div>
   );
 }

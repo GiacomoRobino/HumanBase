@@ -1,0 +1,36 @@
+.sort-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.sort-selector-label {
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-right: 0.25rem;
+}
+
+.sort-selector-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 9999px;
+  background-color: white;
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sort-selector-btn:hover {
+  border-color: #16a34a;
+  color: #16a34a;
+}
+
+.sort-selector-btn.active {
+  background-color: #16a34a;
+  border-color: #16a34a;
+  color: white;
+}
