@@ -48,7 +48,12 @@ class ApiClient {
       method: 'GET',
       headers: this.getHeaders(),
     });
-    return this.handleResponse<Agent>(response);
+    const data = await this.handleResponse<Agent | { success: boolean; agent: Agent }>(response);
+    // Handle both wrapped and unwrapped response formats
+    if ('agent' in data) {
+      return data.agent;
+    }
+    return data;
   }
 
   async getSubmolts(): Promise<Submolt[] | { submolts: Submolt[] }> {

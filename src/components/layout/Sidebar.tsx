@@ -11,7 +11,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({ onCreateSubmolt }: SidebarProps) {
-  const { view, currentSubmolt, navigateToHome, navigateToSubmolt } = useNavigation();
+  const { view, currentSubmolt, navigateToHome, navigateToSubmolt, navigateToProfile } = useNavigation();
   const { submolts, isLoading } = useSubmolts();
   const [isExpanded, setIsExpanded] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -89,6 +89,13 @@ export function Sidebar({ onCreateSubmolt }: SidebarProps) {
         >
           <span className="sidebar-nav-icon">&#127968;</span>
           Home
+        </button>
+        <button
+          className={`sidebar-nav-item ${view === 'profile' ? 'active' : ''}`}
+          onClick={navigateToProfile}
+        >
+          <span className="sidebar-nav-icon">&#128100;</span>
+          My Account
         </button>
       </nav>
 

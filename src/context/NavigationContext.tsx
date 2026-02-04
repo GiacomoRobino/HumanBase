@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
 
-type ViewType = 'home' | 'submolt' | 'post';
+type ViewType = 'home' | 'submolt' | 'post' | 'profile';
 
 interface NavigationState {
   view: ViewType;
@@ -12,6 +12,7 @@ interface NavigationContextType extends NavigationState {
   navigateToHome: () => void;
   navigateToSubmolt: (submoltName: string) => void;
   navigateToPost: (submoltName: string, postId: string) => void;
+  navigateToProfile: () => void;
   goBack: () => void;
 }
 
@@ -48,11 +49,25 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const navigateToProfile = useCallback(() => {
+    setState({
+      view: 'profile',
+      currentSubmolt: null,
+      currentPostId: null,
+    });
+  }, []);
+
   const goBack = useCallback(() => {
     if (state.view === 'post' && state.currentSubmolt) {
       setState({
         view: 'submolt',
         currentSubmolt: state.currentSubmolt,
+        currentPostId: null,
+      });
+    } else if (state.view === 'profile') {
+      setState({
+        view: 'home',
+        currentSubmolt: null,
         currentPostId: null,
       });
     } else {
@@ -71,6 +86,7 @@ export function NavigationProvider({ children }: { children: ReactNode }) {
         navigateToHome,
         navigateToSubmolt,
         navigateToPost,
+        navigateToProfile,
         goBack,
       }}
     >

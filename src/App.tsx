@@ -11,6 +11,7 @@ import { PostDetail } from './components/post/PostDetail';
 import { CreatePostCard } from './components/post/CreatePostCard';
 import { SubmoltHeader } from './components/submolt/SubmoltHeader';
 import { CreateSubmoltModal } from './components/submolt/CreateSubmoltModal';
+import { ProfileView } from './components/profile/ProfileView';
 import './App.css';
 
 function HomeView() {
@@ -45,6 +46,10 @@ function SubmoltView({ submoltName }: { submoltName: string }) {
 
 function MainContent() {
   const { view, currentSubmolt, currentPostId } = useNavigation();
+
+  if (view === 'profile') {
+    return <ProfileView />;
+  }
 
   if (view === 'post' && currentPostId) {
     return <PostDetail postId={currentPostId} />;
