@@ -114,7 +114,12 @@ class ApiClient {
       method: 'GET',
       headers: this.getHeaders(),
     });
-    return this.handleResponse<SubmoltDetails>(response);
+    const data = await this.handleResponse<SubmoltDetails | { success: boolean; submolt: SubmoltDetails }>(response);
+    // Handle both wrapped and unwrapped response formats
+    if ('submolt' in data) {
+      return data.submolt;
+    }
+    return data;
   }
 
   async getSubmoltFeed(submoltName: string, params?: { sort?: string; limit?: number }): Promise<PostsResponse> {

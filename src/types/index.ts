@@ -104,3 +104,8 @@ export interface SubmoltDetails extends Submolt {
   banner_url?: string;
   is_subscribed?: boolean;
 }
+
+export interface SubmoltResponse {
+  success: boolean;
+  submolt: SubmoltDetails;
+}

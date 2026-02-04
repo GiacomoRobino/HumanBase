@@ -19,20 +19,23 @@ export function Sidebar({ onCreateSubmolt }: SidebarProps) {
   const [isSearching, setIsSearching] = useState(false);
 
   const filteredSubmolts = useMemo(() => {
-    if (!searchQuery.trim()) return submolts;
-    const query = searchQuery.toLowerCase();
-    return submolts.filter((submolt) =>
-      submolt.name.toLowerCase().includes(query) ||
-      submolt.description?.toLowerCase().includes(query)
-    );
-  }, [submolts, searchQuery]);
+    let results = submolts;
 
-  // Check if query matches any local submolt exactly
-  const hasExactLocalMatch = useMemo(() => {
-    if (!searchQuery.trim()) return true;
-    const query = searchQuery.toLowerCase().trim();
-    return submolts.some((s) => s.name.toLowerCase() === query);
-  }, [submolts, searchQuery]);
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      results = submolts.filter((submolt) =>
+        submolt.name.toLowerCase().includes(query) ||
+        submolt.description?.toLowerCase().includes(query)
+      );
+    }
+
+    // Add remote submolt to list if found and not already present
+    if (remoteSubmolt && !results.some((s) => s.id === remoteSubmolt.id)) {
+      results = [...results, remoteSubmolt];
+    }
+
+    return results;
+  }, [submolts, searchQuery, remoteSubmolt]);
 
   // Search remote API for submolt
   const searchRemote = useCallback(async (query: string) => {
@@ -133,34 +136,20 @@ export function Sidebar({ onCreateSubmolt }: SidebarProps) {
                     </button>
                   ))}
 
-                  {/* Remote search result */}
-                  {remoteSubmolt && (
-                    <div className="sidebar-remote-section">
-                      <span className="sidebar-remote-label">Found on server:</span>
-                      <button
-                        className={`sidebar-submolt ${currentSubmolt === remoteSubmolt.name ? 'active' : ''}`}
-                        onClick={() => navigateToSubmolt(remoteSubmolt.name)}
-                      >
-                        <span className="sidebar-submolt-name">m/{remoteSubmolt.name}</span>
-                        <span className="sidebar-submolt-members">{remoteSubmolt.member_count}</span>
-                      </button>
-                    </div>
-                  )}
-
                   {/* Searching indicator */}
                   {isSearching && (
-                    <div className="sidebar-searching">Searching server...</div>
+                    <div className="sidebar-searching">Searching...</div>
                   )}
 
                   {/* Empty state */}
-                  {filteredSubmolts.length === 0 && !remoteSubmolt && !isSearching && (
+                  {filteredSubmolts.length === 0 && !isSearching && (
                     <div className="sidebar-empty">
-                      {searchQuery ? 'No communities found locally' : 'No communities yet'}
+                      {searchQuery ? 'No communities found' : 'No communities yet'}
                     </div>
                   )}
 
                   {/* Go to community directly */}
-                  {searchQuery.trim() && !remoteSubmolt && !isSearching && !hasExactLocalMatch && (
+                  {searchQuery.trim() && filteredSubmolts.length === 0 && !isSearching && (
                     <button
                       className="sidebar-go-direct"
                       onClick={() => navigateToSubmolt(searchQuery.trim().toLowerCase())}
