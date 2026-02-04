@@ -123,7 +123,15 @@ export interface ProfileComment {
   upvotes: number;
   downvotes: number;
   created_at: string;
-  post_id: string;
-  post_title: string;
+  post_id?: string;
+  postId?: string;
+  post_title?: string;
+  postTitle?: string;
   submolt_name?: string;
+  submoltName?: string;
+  post?: {
+    id: string;
+    title: string;
+    submolt_name?: string;
+  };
 }

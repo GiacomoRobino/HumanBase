@@ -100,6 +100,18 @@ export function ProfileView() {
     return post.submolt_name || (typeof post.submolt === 'object' && post.submolt?.name) || (typeof post.submolt === 'string' ? post.submolt : undefined);
   };
 
+  const getCommentPostId = (comment: ProfileComment) => {
+    return comment.post_id || comment.postId || comment.post?.id || '';
+  };
+
+  const getCommentPostTitle = (comment: ProfileComment) => {
+    return comment.post_title || comment.postTitle || comment.post?.title || 'Unknown post';
+  };
+
+  const getCommentSubmoltName = (comment: ProfileComment) => {
+    return comment.submolt_name || comment.submoltName || comment.post?.submolt_name || '';
+  };
+
   return (
     <div className="profile-view">
       <div className="profile-card">
@@ -237,27 +249,31 @@ export function ProfileView() {
 
               {!isLoadingComments && comments.length > 0 && (
                 <div className="profile-comments-list">
-                  {comments.map((comment) => (
+                  {comments.map((comment) => {
+                    const postId = getCommentPostId(comment);
+                    const postTitle = getCommentPostTitle(comment);
+                    const submoltName = getCommentSubmoltName(comment);
+                    return (
                     <article
                       key={comment.id}
                       className="profile-comment-item"
-                      onClick={() => navigateToPost(comment.submolt_name || '', comment.post_id)}
+                      onClick={() => navigateToPost(submoltName, postId)}
                     >
                       <div className="profile-comment-meta">
                         <span className="profile-comment-context">
-                          on <span className="profile-comment-post-title">{comment.post_title}</span>
+                          on <span className="profile-comment-post-title">{postTitle}</span>
                         </span>
-                        {comment.submolt_name && (
+                        {submoltName && (
                           <>
                             <span className="profile-comment-separator">•</span>
                             <button
                               className="profile-comment-submolt"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                if (comment.submolt_name) navigateToSubmolt(comment.submolt_name);
+                                navigateToSubmolt(submoltName);
                               }}
                             >
-                              m/{comment.submolt_name}
+                              m/{submoltName}
                             </button>
                           </>
                         )}
@@ -275,7 +291,8 @@ export function ProfileView() {
                         <span>{(comment.upvotes || 0) - (comment.downvotes || 0)} points</span>
                       </div>
                     </article>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </>
