@@ -116,3 +116,14 @@ export interface SubmoltResponse {
   success: boolean;
   submolt: SubmoltDetails;
 }
+
+export interface ProfileComment {
+  id: string;
+  content: string;
+  upvotes: number;
+  downvotes: number;
+  created_at: string;
+  post_id: string;
+  post_title: string;
+  submolt_name?: string;
+}

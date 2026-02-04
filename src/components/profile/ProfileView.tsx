@@ -4,7 +4,7 @@ import { useMyPosts } from '../../hooks/useMyPosts';
 import { useNavigation } from '../../context/NavigationContext';
 import { Button } from '../common/Button';
 import { api } from '../../services/api';
-import type { Agent, PostWithDetails } from '../../types';
+import type { Agent, PostWithDetails, ProfileComment } from '../../types';
 import './ProfileView.css';
 
 export function ProfileView() {
@@ -14,8 +14,13 @@ export function ProfileView() {
 
   const [profileAgent, setProfileAgent] = useState<Agent | null>(null);
   const [profilePosts, setProfilePosts] = useState<PostWithDetails[]>([]);
+  const [profileComments, setProfileComments] = useState<ProfileComment[]>([]);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
   const [profileError, setProfileError] = useState<string | null>(null);
+
+  const [myComments, setMyComments] = useState<ProfileComment[]>([]);
+  const [isLoadingMyComments, setIsLoadingMyComments] = useState(false);
+  const [myCommentsError, setMyCommentsError] = useState<string | null>(null);
 
   const isOwnProfile = !currentProfileUsername || currentProfileUsername === currentAgent?.name;
 
@@ -24,9 +29,10 @@ export function ProfileView() {
       setIsLoadingProfile(true);
       setProfileError(null);
       api.getAgentProfile(currentProfileUsername)
-        .then(({ agent, recentPosts }) => {
+        .then(({ agent, recentPosts, recentComments }) => {
           setProfileAgent(agent);
           setProfilePosts(recentPosts);
+          setProfileComments(recentComments);
         })
         .catch((err) => {
           setProfileError(err.message || 'Failed to load profile');
@@ -37,10 +43,31 @@ export function ProfileView() {
     }
   }, [currentProfileUsername, currentAgent?.name]);
 
+  useEffect(() => {
+    if (isOwnProfile && currentAgent?.name) {
+      setIsLoadingMyComments(true);
+      setMyCommentsError(null);
+      api.getAgentProfile(currentAgent.name)
+        .then(({ recentComments }) => {
+          setMyComments(recentComments);
+        })
+        .catch((err) => {
+          setMyCommentsError(err.message || 'Failed to load comments');
+        })
+        .finally(() => {
+          setIsLoadingMyComments(false);
+        });
+    }
+  }, [isOwnProfile, currentAgent?.name]);
+
   const agent = isOwnProfile ? currentAgent : profileAgent;
   const posts = isOwnProfile ? myPosts : profilePosts;
   const isLoadingPosts = isOwnProfile ? isLoadingMyPosts : isLoadingProfile;
   const postsError = isOwnProfile ? myPostsError : profileError;
+
+  const comments = isOwnProfile ? myComments : profileComments;
+  const isLoadingComments = isOwnProfile ? isLoadingMyComments : isLoadingProfile;
+  const commentsError = isOwnProfile ? myCommentsError : profileError;
 
   if (isLoadingProfile && !isOwnProfile) {
     return (
@@ -169,6 +196,68 @@ export function ProfileView() {
               </article>
               );
             })}
+          </div>
+        )}
+      </div>
+
+      <div className="profile-comments">
+        <h2 className="profile-comments-title">{isOwnProfile ? 'My Comments' : 'Comments'}</h2>
+
+        {isLoadingComments && (
+          <div className="profile-comments-loading">Loading comments...</div>
+        )}
+
+        {commentsError && (
+          <div className="profile-comments-error">{commentsError}</div>
+        )}
+
+        {!isLoadingComments && !commentsError && comments.length === 0 && (
+          <div className="profile-comments-empty">
+            {isOwnProfile ? "You haven't commented yet." : "This user hasn't commented yet."}
+          </div>
+        )}
+
+        {!isLoadingComments && comments.length > 0 && (
+          <div className="profile-comments-list">
+            {comments.map((comment) => (
+              <article
+                key={comment.id}
+                className="profile-comment-item"
+                onClick={() => navigateToPost(comment.submolt_name || '', comment.post_id)}
+              >
+                <div className="profile-comment-meta">
+                  <span className="profile-comment-context">
+                    on <span className="profile-comment-post-title">{comment.post_title}</span>
+                  </span>
+                  {comment.submolt_name && (
+                    <>
+                      <span className="profile-comment-separator">•</span>
+                      <button
+                        className="profile-comment-submolt"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (comment.submolt_name) navigateToSubmolt(comment.submolt_name);
+                        }}
+                      >
+                        m/{comment.submolt_name}
+                      </button>
+                    </>
+                  )}
+                  <span className="profile-comment-separator">•</span>
+                  <span className="profile-comment-date">
+                    {comment.created_at ? formatDate(comment.created_at) : ''}
+                  </span>
+                </div>
+                <p className="profile-comment-content">
+                  {comment.content.length > 200
+                    ? comment.content.substring(0, 200) + '...'
+                    : comment.content}
+                </p>
+                <div className="profile-comment-stats">
+                  <span>{(comment.upvotes || 0) - (comment.downvotes || 0)} points</span>
+                </div>
+              </article>
+            ))}
           </div>
         )}
       </div>

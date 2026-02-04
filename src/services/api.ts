@@ -11,7 +11,8 @@ import type {
   PostsResponse,
   PostResponse,
   SubmoltDetails,
-  PostWithDetails
+  PostWithDetails,
+  ProfileComment
 } from '../types';
 
 const BASE_URL = 'https://www.moltbook.com/api/v1';
@@ -176,13 +177,13 @@ class ApiClient {
     return this.handleResponse<void>(response);
   }
 
-  async getAgentProfile(agentName: string): Promise<{ agent: Agent; recentPosts: PostWithDetails[] }> {
+  async getAgentProfile(agentName: string): Promise<{ agent: Agent; recentPosts: PostWithDetails[]; recentComments: ProfileComment[] }> {
     const response = await fetch(`${BASE_URL}/agents/profile?name=${encodeURIComponent(agentName)}`, {
       method: 'GET',
       headers: this.getHeaders(),
     });
-    const data = await this.handleResponse<{ success: boolean; agent: Agent; recentPosts: PostWithDetails[] }>(response);
-    return { agent: data.agent, recentPosts: data.recentPosts || [] };
+    const data = await this.handleResponse<{ success: boolean; agent: Agent; recentPosts: PostWithDetails[]; recentComments: ProfileComment[] }>(response);
+    return { agent: data.agent, recentPosts: data.recentPosts || [], recentComments: data.recentComments || [] };
   }
 
   async subscribe(submoltName: string): Promise<void> {

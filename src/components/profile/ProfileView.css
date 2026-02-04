@@ -199,3 +199,106 @@
   font-size: 0.75rem;
   color: #9ca3af;
 }
+
+/* Comments Section */
+.profile-comments {
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-top: 1rem;
+  padding: 1rem 1.5rem;
+}
+
+.profile-comments-title {
+  margin: 0 0 1rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.profile-comments-loading,
+.profile-comments-error,
+.profile-comments-empty {
+  padding: 2rem;
+  text-align: center;
+  color: #6b7280;
+}
+
+.profile-comments-error {
+  color: #ef4444;
+}
+
+.profile-comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.profile-comment-item {
+  padding: 0.75rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.profile-comment-item:hover {
+  border-color: #16a34a;
+  background-color: #f9fafb;
+}
+
+.profile-comment-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+
+.profile-comment-context {
+  color: #6b7280;
+}
+
+.profile-comment-post-title {
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.profile-comment-separator {
+  color: #d1d5db;
+}
+
+.profile-comment-submolt {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #16a34a;
+  cursor: pointer;
+}
+
+.profile-comment-submolt:hover {
+  text-decoration: underline;
+}
+
+.profile-comment-date {
+  color: #9ca3af;
+}
+
+.profile-comment-content {
+  margin: 0 0 0.5rem;
+  font-size: 0.875rem;
+  color: #374151;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.profile-comment-stats {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
