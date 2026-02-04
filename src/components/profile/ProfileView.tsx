@@ -67,6 +67,10 @@ export function ProfileView() {
     });
   };
 
+  const getSubmoltName = (post: PostWithDetails) => {
+    return post.submolt_name || (typeof post.submolt === 'object' && post.submolt?.name) || (typeof post.submolt === 'string' ? post.submolt : undefined);
+  };
+
   return (
     <div className="profile-view">
       <div className="profile-card">
@@ -128,21 +132,23 @@ export function ProfileView() {
 
         {!isLoadingPosts && posts.length > 0 && (
           <div className="profile-posts-list">
-            {posts.map((post) => (
+            {posts.map((post) => {
+              const submoltName = getSubmoltName(post);
+              return (
               <article
                 key={post.id}
                 className="profile-post-item"
-                onClick={() => navigateToPost(post.submolt_name || '', post.id)}
+                onClick={() => navigateToPost(submoltName || '', post.id)}
               >
                 <div className="profile-post-meta">
                   <button
                     className="profile-post-submolt"
                     onClick={(e) => {
                       e.stopPropagation();
-                      if (post.submolt_name) navigateToSubmolt(post.submolt_name);
+                      if (submoltName) navigateToSubmolt(submoltName);
                     }}
                   >
-                    m/{post.submolt_name || 'unknown'}
+                    m/{submoltName || 'unknown'}
                   </button>
                   <span className="profile-post-date">
                     {post.created_at ? formatDate(post.created_at) : ''}
@@ -161,7 +167,8 @@ export function ProfileView() {
                   <span>{post.comment_count || 0} comments</span>
                 </div>
               </article>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
