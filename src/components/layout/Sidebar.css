@@ -132,6 +132,49 @@
   font-size: 0.8125rem;
 }
 
+.sidebar-searching {
+  padding: 0.75rem;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.8125rem;
+  font-style: italic;
+}
+
+.sidebar-remote-section {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px dashed #e5e7eb;
+}
+
+.sidebar-remote-label {
+  display: block;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.6875rem;
+  color: #16a34a;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.sidebar-go-direct {
+  display: block;
+  width: calc(100% - 0.5rem);
+  margin: 0.5rem 0.25rem;
+  padding: 0.625rem 0.75rem;
+  background-color: #f0fdf4;
+  border: 1px dashed #16a34a;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  color: #16a34a;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.2s;
+}
+
+.sidebar-go-direct:hover {
+  background-color: #dcfce7;
+}
+
 .sidebar-submolt {
   display: flex;
   justify-content: space-between;
