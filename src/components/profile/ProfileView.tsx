@@ -22,6 +22,8 @@ export function ProfileView() {
   const [isLoadingMyComments, setIsLoadingMyComments] = useState(false);
   const [myCommentsError, setMyCommentsError] = useState<string | null>(null);
 
+  const [activeTab, setActiveTab] = useState<'posts' | 'comments'>('posts');
+
   const isOwnProfile = !currentProfileUsername || currentProfileUsername === currentAgent?.name;
 
   useEffect(() => {
@@ -140,126 +142,145 @@ export function ProfileView() {
         )}
       </div>
 
-      <div className="profile-posts">
-        <h2 className="profile-posts-title">{isOwnProfile ? 'My Posts' : 'Posts'}</h2>
+      <div className="profile-content">
+        <div className="profile-tabs">
+          <button
+            className={`profile-tab ${activeTab === 'posts' ? 'profile-tab-active' : ''}`}
+            onClick={() => setActiveTab('posts')}
+          >
+            {isOwnProfile ? 'My Posts' : 'Posts'}
+          </button>
+          <button
+            className={`profile-tab ${activeTab === 'comments' ? 'profile-tab-active' : ''}`}
+            onClick={() => setActiveTab('comments')}
+          >
+            {isOwnProfile ? 'My Comments' : 'Comments'}
+          </button>
+        </div>
 
-        {isLoadingPosts && (
-          <div className="profile-posts-loading">Loading posts...</div>
-        )}
+        <div className="profile-tab-content">
+          {activeTab === 'posts' && (
+            <>
+              {isLoadingPosts && (
+                <div className="profile-content-loading">Loading posts...</div>
+              )}
 
-        {postsError && (
-          <div className="profile-posts-error">{postsError}</div>
-        )}
+              {postsError && (
+                <div className="profile-content-error">{postsError}</div>
+              )}
 
-        {!isLoadingPosts && !postsError && posts.length === 0 && (
-          <div className="profile-posts-empty">
-            {isOwnProfile ? "You haven't posted anything yet." : "This user hasn't posted anything yet."}
-          </div>
-        )}
-
-        {!isLoadingPosts && posts.length > 0 && (
-          <div className="profile-posts-list">
-            {posts.map((post) => {
-              const submoltName = getSubmoltName(post);
-              return (
-              <article
-                key={post.id}
-                className="profile-post-item"
-                onClick={() => navigateToPost(submoltName || '', post.id)}
-              >
-                <div className="profile-post-meta">
-                  <button
-                    className="profile-post-submolt"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (submoltName) navigateToSubmolt(submoltName);
-                    }}
-                  >
-                    m/{submoltName || 'unknown'}
-                  </button>
-                  <span className="profile-post-date">
-                    {post.created_at ? formatDate(post.created_at) : ''}
-                  </span>
+              {!isLoadingPosts && !postsError && posts.length === 0 && (
+                <div className="profile-content-empty">
+                  {isOwnProfile ? "You haven't posted anything yet." : "This user hasn't posted anything yet."}
                 </div>
-                <h3 className="profile-post-title">{post.title}</h3>
-                {post.content && (
-                  <p className="profile-post-preview">
-                    {post.content.length > 150
-                      ? post.content.substring(0, 150) + '...'
-                      : post.content}
-                  </p>
-                )}
-                <div className="profile-post-stats">
-                  <span>{(post.upvotes || 0) - (post.downvotes || 0)} points</span>
-                  <span>{post.comment_count || 0} comments</span>
+              )}
+
+              {!isLoadingPosts && posts.length > 0 && (
+                <div className="profile-posts-list">
+                  {posts.map((post) => {
+                    const submoltName = getSubmoltName(post);
+                    return (
+                    <article
+                      key={post.id}
+                      className="profile-post-item"
+                      onClick={() => navigateToPost(submoltName || '', post.id)}
+                    >
+                      <div className="profile-post-meta">
+                        <button
+                          className="profile-post-submolt"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (submoltName) navigateToSubmolt(submoltName);
+                          }}
+                        >
+                          m/{submoltName || 'unknown'}
+                        </button>
+                        <span className="profile-post-date">
+                          {post.created_at ? formatDate(post.created_at) : ''}
+                        </span>
+                      </div>
+                      <h3 className="profile-post-title">{post.title}</h3>
+                      {post.content && (
+                        <p className="profile-post-preview">
+                          {post.content.length > 150
+                            ? post.content.substring(0, 150) + '...'
+                            : post.content}
+                        </p>
+                      )}
+                      <div className="profile-post-stats">
+                        <span>{(post.upvotes || 0) - (post.downvotes || 0)} points</span>
+                        <span>{post.comment_count || 0} comments</span>
+                      </div>
+                    </article>
+                    );
+                  })}
                 </div>
-              </article>
-              );
-            })}
-          </div>
-        )}
-      </div>
+              )}
+            </>
+          )}
 
-      <div className="profile-comments">
-        <h2 className="profile-comments-title">{isOwnProfile ? 'My Comments' : 'Comments'}</h2>
+          {activeTab === 'comments' && (
+            <>
+              {isLoadingComments && (
+                <div className="profile-content-loading">Loading comments...</div>
+              )}
 
-        {isLoadingComments && (
-          <div className="profile-comments-loading">Loading comments...</div>
-        )}
+              {commentsError && (
+                <div className="profile-content-error">{commentsError}</div>
+              )}
 
-        {commentsError && (
-          <div className="profile-comments-error">{commentsError}</div>
-        )}
-
-        {!isLoadingComments && !commentsError && comments.length === 0 && (
-          <div className="profile-comments-empty">
-            {isOwnProfile ? "You haven't commented yet." : "This user hasn't commented yet."}
-          </div>
-        )}
-
-        {!isLoadingComments && comments.length > 0 && (
-          <div className="profile-comments-list">
-            {comments.map((comment) => (
-              <article
-                key={comment.id}
-                className="profile-comment-item"
-                onClick={() => navigateToPost(comment.submolt_name || '', comment.post_id)}
-              >
-                <div className="profile-comment-meta">
-                  <span className="profile-comment-context">
-                    on <span className="profile-comment-post-title">{comment.post_title}</span>
-                  </span>
-                  {comment.submolt_name && (
-                    <>
-                      <span className="profile-comment-separator">•</span>
-                      <button
-                        className="profile-comment-submolt"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (comment.submolt_name) navigateToSubmolt(comment.submolt_name);
-                        }}
-                      >
-                        m/{comment.submolt_name}
-                      </button>
-                    </>
-                  )}
-                  <span className="profile-comment-separator">•</span>
-                  <span className="profile-comment-date">
-                    {comment.created_at ? formatDate(comment.created_at) : ''}
-                  </span>
+              {!isLoadingComments && !commentsError && comments.length === 0 && (
+                <div className="profile-content-empty">
+                  {isOwnProfile ? "You haven't commented yet." : "This user hasn't commented yet."}
                 </div>
-                <p className="profile-comment-content">
-                  {comment.content.length > 200
-                    ? comment.content.substring(0, 200) + '...'
-                    : comment.content}
-                </p>
-                <div className="profile-comment-stats">
-                  <span>{(comment.upvotes || 0) - (comment.downvotes || 0)} points</span>
+              )}
+
+              {!isLoadingComments && comments.length > 0 && (
+                <div className="profile-comments-list">
+                  {comments.map((comment) => (
+                    <article
+                      key={comment.id}
+                      className="profile-comment-item"
+                      onClick={() => navigateToPost(comment.submolt_name || '', comment.post_id)}
+                    >
+                      <div className="profile-comment-meta">
+                        <span className="profile-comment-context">
+                          on <span className="profile-comment-post-title">{comment.post_title}</span>
+                        </span>
+                        {comment.submolt_name && (
+                          <>
+                            <span className="profile-comment-separator">•</span>
+                            <button
+                              className="profile-comment-submolt"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (comment.submolt_name) navigateToSubmolt(comment.submolt_name);
+                              }}
+                            >
+                              m/{comment.submolt_name}
+                            </button>
+                          </>
+                        )}
+                        <span className="profile-comment-separator">•</span>
+                        <span className="profile-comment-date">
+                          {comment.created_at ? formatDate(comment.created_at) : ''}
+                        </span>
+                      </div>
+                      <p className="profile-comment-content">
+                        {comment.content.length > 200
+                          ? comment.content.substring(0, 200) + '...'
+                          : comment.content}
+                      </p>
+                      <div className="profile-comment-stats">
+                        <span>{(comment.upvotes || 0) - (comment.downvotes || 0)} points</span>
+                      </div>
+                    </article>
+                  ))}
                 </div>
-              </article>
-            ))}
-          </div>
-        )}
+              )}
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

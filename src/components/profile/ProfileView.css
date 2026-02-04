@@ -104,31 +104,66 @@
   color: #6b7280;
 }
 
-/* Posts Section */
-.profile-posts {
+/* Tabbed Content Section */
+.profile-content {
   background-color: white;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   margin-top: 1rem;
+  overflow: hidden;
+}
+
+.profile-tabs {
+  display: flex;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.profile-tab {
+  flex: 1;
+  padding: 0.875rem 1rem;
+  background: none;
+  border: none;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  transition: color 0.2s, background-color 0.2s;
+  position: relative;
+}
+
+.profile-tab:hover {
+  color: #1f2937;
+  background-color: #f9fafb;
+}
+
+.profile-tab-active {
+  color: #16a34a;
+  background-color: white;
+}
+
+.profile-tab-active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #16a34a;
+}
+
+.profile-tab-content {
   padding: 1rem 1.5rem;
 }
 
-.profile-posts-title {
-  margin: 0 0 1rem;
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #1f2937;
-}
-
-.profile-posts-loading,
-.profile-posts-error,
-.profile-posts-empty {
+.profile-content-loading,
+.profile-content-error,
+.profile-content-empty {
   padding: 2rem;
   text-align: center;
   color: #6b7280;
 }
 
-.profile-posts-error {
+.profile-content-error {
   color: #ef4444;
 }
 
@@ -200,34 +235,7 @@
   color: #9ca3af;
 }
 
-/* Comments Section */
-.profile-comments {
-  background-color: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  margin-top: 1rem;
-  padding: 1rem 1.5rem;
-}
-
-.profile-comments-title {
-  margin: 0 0 1rem;
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #1f2937;
-}
-
-.profile-comments-loading,
-.profile-comments-error,
-.profile-comments-empty {
-  padding: 2rem;
-  text-align: center;
-  color: #6b7280;
-}
-
-.profile-comments-error {
-  color: #ef4444;
-}
-
+/* Comments List */
 .profile-comments-list {
   display: flex;
   flex-direction: column;
